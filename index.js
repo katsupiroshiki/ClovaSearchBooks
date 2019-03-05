@@ -6,9 +6,9 @@ const EXTENSIONID = process.env.EXTENSIONID;
 const RAKUTEN_WEB_API_APP_ID = process.env.RAKUTEN_WEB_API_APP_ID;
 
 // Clova Developer Centerで設定したExtension IDを使ってリクエストの検証を行うことができる
-const clovaMiddleware = clova.Middleware({
-    applicationId: EXTENSIONID
-});
+//const clovaMiddleware = clova.Middleware({
+//    applicationId: EXTENSIONID
+//});
 
 const BookService = require('./services/BookService')
 
@@ -27,9 +27,10 @@ const clovaSkillHandler = clova.Client
 
     .onIntentRequest(async responseHelper => {
       const intent = responseHelper.getIntentName();
-      console.log('Intent : ' + intent);
+      
 
       const sessionId = responseHelper.getSessionId();
+      console.log('Intent : ' + intent);
 
       const slots = responseHelper.getSlots();
       console.log(slots);
@@ -60,3 +61,12 @@ const clovaSkillHandler = clova.Client
       const sessionId = responseHelper.getSessionId();
   })
   .handle();
+
+const app = new express();
+const port = process.env.PORT || 3000;
+
+//リクエストの検証を行う場合。環境変数APPLICATION_ID(値はClova Developer Center上で入力したExtension ID)が必須
+const clovaMiddleware = clova.Middleware({applicationId: 'EXTENSIONID'});
+app.post('/clova', clovaMiddleware, clovaSkillHandler);
+
+app.listen(port, () => console.log(`Server running on ${port}`));
