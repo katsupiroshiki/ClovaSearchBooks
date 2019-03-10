@@ -1,16 +1,25 @@
 const clova = require('@line/clova-cek-sdk-nodejs');
 const express = require('express');
+const Enumerable = require('linq')
 
 // アプリのID
 const EXTENSIONID = process.env.EXTENSIONID;
 const RAKUTEN_WEB_API_APP_ID = process.env.RAKUTEN_WEB_API_APP_ID;
+const LINE_TOKEN = process.env.LINE_TOKEN;
 
-// Clova Developer Centerで設定したExtension IDを使ってリクエストの検証を行うことができる
-//const clovaMiddleware = clova.Middleware({
-//    applicationId: EXTENSIONID
-//});
+ //Clova Developer Centerで設定したExtension IDを使ってリクエストの検証を行うことができる
+ //const clovaMiddleware = clova.Middleware({
+    //applicationId: EXTENSIONID
+ //});
 
 const BookService = require('./services/BookService')
+const Line = require('./services/LineService');
+const myLine = new Line();
+// LINE Notify トークンセット
+myLine.setToken(LINE_TOKEN);
+
+let bookService = new BookService(RAKUTEN_WEB_API_APP_ID)
+let books = []
 
 // 発話設定
 const clovaSkillHandler = clova.Client
@@ -27,13 +36,12 @@ const clovaSkillHandler = clova.Client
 
     .onIntentRequest(async responseHelper => {
       const intent = responseHelper.getIntentName();
-      
-
-      const sessionId = responseHelper.getSessionId();
       console.log('Intent : ' + intent);
 
       const slots = responseHelper.getSlots();
       console.log(slots);
+
+      const sessionId = responseHelper.getSessionId();
 
       switch (intent) {
         case 'SearchRequest':
@@ -44,14 +52,23 @@ const clovaSkillHandler = clova.Client
           });
           break;
         case 'GenreSearch':
-          let bookService = new BookService(RAKUTEN_WEB_API_APP_ID)
-          let bookTitles = await bookService.getBookTitle()
+          
+          books = await bookService.getBooks(slots.Genre)
 
-          speech.value = bookTitles.join(",")
+          let titles = bookService.extractTitle(books)
+          let speech = {
+            lang: 'ja',
+            type: 'PlainText',
+            value: slots.Genre+ 'で人気なのは'+ titles.join(",") + 'です。' +'\n\n'+'詳細をLINEに送りますか？'
+        }
+          responseHelper.setSimpleSpeech(speech);
+          break;
 
-          responseHelper.setSimpleSpeechh(
-            clova.SpeechBuilder.createSpeechText(speech)
-          );
+        case 'Clova.YesIntent':
+          let captions = bookService.extractTitleAndCaption(books)
+          let message = Enumerable.from(captions)
+            .select(x => "タイトル：" + x.title + "\nあらすじ：" + x.caption).toArray().join("\n\n\n")
+          myLine.notify("\n"+message);
           
           break;
       }
@@ -62,11 +79,16 @@ const clovaSkillHandler = clova.Client
   })
   .handle();
 
-const app = new express();
-const port = process.env.PORT || 3000;
+  const app = new express();
+  const port = process.env.PORT || 3000;
+ 
+  //リクエストの検証を行う場合。環境変数APPLICATION_ID(値はClova Developer Center上で入力したExtension ID)が必須
+ const clovaMiddleware = clova.Middleware({applicationId: EXTENSIONID});
+ app.post('/clova', clovaMiddleware, clovaSkillHandler);
+ app.get('/clova', (req, res, next) => {
+   res.send('hello')
+  })
+ 
+ app.listen(port, () => console.log(`Server running on ${port}`));
 
-//リクエストの検証を行う場合。環境変数APPLICATION_ID(値はClova Developer Center上で入力したExtension ID)が必須
-const clovaMiddleware = clova.Middleware({applicationId: 'EXTENSIONID'});
-app.post('/clova', clovaMiddleware, clovaSkillHandler);
-
-app.listen(port, () => console.log(`Server running on ${port}`));
+ 
