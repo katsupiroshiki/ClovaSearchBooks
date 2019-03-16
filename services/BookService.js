@@ -20,7 +20,7 @@ module.exports = class BookService {
 					format: "xml",
 					booksGenreId: GenreData[genre],
 					sort:"sales",
-					hits:10
+					hits:5
 				}
 			}, function (error, res, body) {
 				if (!error && res.statusCode == 200) {
@@ -42,14 +42,19 @@ module.exports = class BookService {
 
 	extractTitle(books){					
 		return Enumerable.from(books)
-			.select(x => x.value.title).toArray();
+			.select(x => x.value.title + x.value.subTitle).toArray();
 	}
 
 	extractTitleAndCaption(books){
 		return Enumerable.from(books)
 			.select(x => ({
 				title : x.value.title,
+				subTitle : x.value.subTitle,
+				author : x.value.author,
+				publisherName : x.value.publisherName
+				salesDate : x.value.salesDate
 				caption : x.value.itemCaption,
+				captionitemUrl : x.value.captionitemUrl
 				largeImageUrl : x.value.largeImageUrl
 			})).toArray(); 
 	}

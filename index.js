@@ -30,7 +30,7 @@ const clovaSkillHandler = clova.Client
         responseHelper.setSimpleSpeech({
             lang: 'ja',
             type: 'PlainText',
-            value: '起動しました。',
+            value: 'かしこまりました。Clovaが本屋さんになりきって、おすすめを紹介します。',
         });
     })
 
@@ -48,9 +48,10 @@ const clovaSkillHandler = clova.Client
           responseHelper.setSimpleSpeech({                   
             lang: 'ja',
             type: 'PlainText',
-            value: '好きなジャンルを教えてください',
+            value: '好きなジャンルを教えてください。',
           });
           break;
+
         case 'GenreSearch':
           
           books = await bookService.getBooks(slots.Genre)
@@ -60,16 +61,36 @@ const clovaSkillHandler = clova.Client
             lang: 'ja',
             type: 'PlainText',
             value: slots.Genre+ 'で人気なのは'+ titles.join(",") + 'です。' +'\n\n'+'詳細をLINEに送りますか？'
-        }
+          }
           responseHelper.setSimpleSpeech(speech);
           break;
 
         case 'Clova.YesIntent':
           let captions = bookService.extractTitleAndCaption(books)
           let message = Enumerable.from(captions)
-            .select(x => "タイトル：" + x.title + "\nあらすじ：" + x.caption).toArray().join("\n\n\n")
+            .select(x =>
+               "タイトル：" + x.title + x.subTitle 
+              + "\n著者：" + x.author 
+              + "\n出版社：" + x.publisherName
+              + "\n発売日：" + x.salesDate 
+              + "\nあらすじ：" + x.caption
+              + "\n" + x.captionitemUrl
+            ).toArray().join("\n\n\n")
           myLine.notify("\n"+message);
-          
+
+          responseHelper.setSimpleSpeech({                   
+            lang: 'ja',
+            type: 'PlainText',
+            value: 'LINEに送信しました。他にお探しのジャンルはありますか？',
+          });
+          break;
+
+        case 'Clova.NoIntent':
+          responseHelper.setSimpleSpeech({                   
+            lang: 'ja',
+            type: 'PlainText',
+            value: 'ご来店ありがとうございました。また呼んでくださいね。',
+          });
           break;
       }
     })
