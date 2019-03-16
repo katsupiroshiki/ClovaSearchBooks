@@ -51,10 +51,10 @@ module.exports = class BookService {
 				title : x.value.title,
 				subTitle : x.value.subTitle,
 				author : x.value.author,
-				publisherName : x.value.publisherName
-				salesDate : x.value.salesDate
+				publisherName : x.value.publisherName,
+				salesDate : x.value.salesDate,
 				caption : x.value.itemCaption,
-				captionitemUrl : x.value.captionitemUrl
+				captionitemUrl : x.value.captionitemUrl,
 				largeImageUrl : x.value.largeImageUrl
 			})).toArray(); 
 	}
