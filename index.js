@@ -74,7 +74,7 @@ const clovaSkillHandler = clova.Client
               + "\n出版社：" + x.publisherName
               + "\n発売日：" + x.salesDate 
               + "\nあらすじ：" + x.caption
-              + "\n\n" + x.captionitemUrl
+              + "\n\n" + x.itemUrl
             ).toArray().join("\n\n\n")
           myLine.notify("\n"+message);
 

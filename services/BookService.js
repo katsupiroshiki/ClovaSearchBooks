@@ -54,7 +54,7 @@ module.exports = class BookService {
 				publisherName : x.value.publisherName,
 				salesDate : x.value.salesDate,
 				caption : x.value.itemCaption,
-				captionitemUrl : x.value.captionitemUrl,
+				itemUrl : x.value.itemUrl,
 				largeImageUrl : x.value.largeImageUrl
 			})).toArray(); 
 	}
