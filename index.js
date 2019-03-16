@@ -74,7 +74,7 @@ const clovaSkillHandler = clova.Client
               + "\n出版社：" + x.publisherName
               + "\n発売日：" + x.salesDate 
               + "\nあらすじ：" + x.caption
-              + "\n" + x.captionitemUrl
+              + "\n\n" + x.captionitemUrl
             ).toArray().join("\n\n\n")
           myLine.notify("\n"+message);
 
@@ -90,6 +90,14 @@ const clovaSkillHandler = clova.Client
             lang: 'ja',
             type: 'PlainText',
             value: 'ご来店ありがとうございました。また呼んでくださいね。',
+          });
+          break;
+        
+        case 'Clova.GuideIntent':
+          responseHelper.setSimpleSpeech({                   
+            lang: 'ja',
+            type: 'PlainText',
+            value: '本のジャンルを指定してください。Clovaが今売れているタイトルを教えます。',
           });
           break;
       }
