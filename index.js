@@ -60,7 +60,7 @@ const clovaSkillHandler = clova.Client
           let speech = {
             lang: 'ja',
             type: 'PlainText',
-            value: slots.Genre+ 'で人気なのは'+ titles.join(",") + 'です。' +'\n\n'+'詳細をLINEに送りますか？'
+            value: slots.Genre+ 'で人気なのは'+ titles.join("\s\s\s") + 'です。' +'\n\n'+'詳細をLINEに送りますか？'
           }
           responseHelper.setSimpleSpeech(speech);
           break;
@@ -69,7 +69,7 @@ const clovaSkillHandler = clova.Client
           let captions = bookService.extractTitleAndCaption(books)
           let message = Enumerable.from(captions)
             .select(x =>
-               "タイトル：" + x.title + x.subTitle 
+              "タイトル：" + x.title + x.subTitle 
               + "\n著者：" + x.author 
               + "\n出版社：" + x.publisherName
               + "\n発売日：" + x.salesDate 
@@ -89,7 +89,7 @@ const clovaSkillHandler = clova.Client
           responseHelper.setSimpleSpeech({                   
             lang: 'ja',
             type: 'PlainText',
-            value: 'ご来店ありがとうございました。また呼んでくださいね。',
+            value: 'ご来店ありがとうございました。スキルを終了してください。',
           });
           break;
         
@@ -105,7 +105,8 @@ const clovaSkillHandler = clova.Client
 
     .onSessionEndedRequest(responseHelper => {
       const sessionId = responseHelper.getSessionId();
-  })
+      
+    })
   .handle();
 
   const app = new express();
