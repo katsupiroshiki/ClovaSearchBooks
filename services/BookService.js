@@ -42,7 +42,7 @@ module.exports = class BookService {
 
 	extractTitle(books){					
 		return Enumerable.from(books)
-			.select(x => x.value.titleKana + x.value.subTitleKana).toArray();
+			.select(x => x.value.title + '、' + x.value.subTitle + '。').toArray();
 	}
 
 	extractTitleAndCaption(books){

@@ -57,10 +57,15 @@ const clovaSkillHandler = clova.Client
           books = await bookService.getBooks(slots.Genre)
 
           let titles = bookService.extractTitle(books)
+          titleLanking = []; 
+          titles.forEach(function( titles, index ) {
+            titleLanking[index] = (index + 1) + "位、" + titles ;
+          });
+
           let speech = {
             lang: 'ja',
             type: 'PlainText',
-            value: slots.Genre+ 'で人気なのは 、'+ titles.join("　　　") + 'です。' +'詳細をLINEに送りますか？'
+            value: '楽天ブックスの' + slots.Genre+ '、で人気なのは 、' + titleLanking.join("。") + 'です。' +'詳細をLINEに送りますか？'
           }
           responseHelper.setSimpleSpeech(speech);
           break;
