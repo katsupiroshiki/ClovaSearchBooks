@@ -60,7 +60,7 @@ const clovaSkillHandler = clova.Client
           let speech = {
             lang: 'ja',
             type: 'PlainText',
-            value: slots.Genre+ 'で人気なのは 、'+ titles.join("、") + 'です。' +'詳細をLINEに送りますか？'
+            value: slots.Genre+ 'で人気なのは 、'+ titles.join("　　　") + 'です。' +'詳細をLINEに送りますか？'
           }
           responseHelper.setSimpleSpeech(speech);
           break;
